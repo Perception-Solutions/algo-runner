@@ -1,2 +1,3 @@
-from . import DDPFF
+from . import DDPFF, PEAC
 from .DDPFF import *
+from .PEAC import *

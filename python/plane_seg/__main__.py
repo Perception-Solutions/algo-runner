@@ -1,6 +1,6 @@
 import numpy as np
 
-from algorithm.DDPFF import DDPFF
+from algorithm import DDPFF, PEAC
 from metrics import evaluate_metrics
 from pathlib import Path
 from typing import AnyStr
@@ -34,7 +34,13 @@ def main(argv):
 
     args = parser.parse_args(argv)
 
-    algorithm = DDPFF(args.algorithm, args.config, args.data)
+    if args.algorithm.startswith("peac"):
+        algorithm = PEAC(args.algorithm, args.config, args.data)
+    elif args.algorithm.startswith("ddpff"):
+        algorithm = DDPFF(args.algorithm, args.config, args.data)
+    else:
+        raise ValueError("invalid algorithm specified:", args.algorithm)
+
     labels = algorithm.run()
     np.save(args.output, labels)
 
