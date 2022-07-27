@@ -22,8 +22,6 @@ class DDPFF(Algorithm.Algorithm):
         self._alg_output_dir = Path("ddpff_output")
         self._alg_artifact_name = Path("planes.txt")
         self._parameter_list = (
-            "debugLevel",
-            "bufferSize",
             "floodFill.pointThreshold_min",
             "floodFill.pointThreshold_max",
             "floodFill.planeThreshold_flood",
@@ -32,7 +30,6 @@ class DDPFF(Algorithm.Algorithm):
             "floodFill.planeThreshold_merge_max",
             "floodFill.angleThresholdFloodFill",
             "floodFill.angleThresholdFloodFill_max",
-            "floodFill.minPlaneSize",
             "floodFill.normalSampleDistance_min",
             "floodFill.normalSampleDistance_max",
             "floodFill.c_plane",
