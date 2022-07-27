@@ -1,12 +1,10 @@
 from pathlib import Path
 from shutil import rmtree
-from docker.types import Mount
 
 from typing import Collection
 
 from . import Algorithm
 
-import docker
 
 import numpy as np
 import open3d as o3d
@@ -58,27 +56,6 @@ class DDPFF(Algorithm.Algorithm):
         o3d.io.write_point_cloud(pcd_path, pcd, write_ascii=True)
 
         return Path(pcd_path)
-
-    def _evaluate_algorithm(self, input_parameters: Collection[str]) -> Path:
-        client = docker.from_env()
-        input_mount = Mount(
-            target="/app/build/input",
-            source=str(self._alg_input_dir.absolute()),
-            type="bind",
-        )
-        output_mount = Mount(
-            target="/app/build/output",
-            source=str(self._alg_output_dir.absolute()),
-            type="bind",
-        )
-
-        client.containers.run(
-            self.container_name,
-            " ".join(input_parameters),
-            mounts=[input_mount, output_mount],
-        )
-
-        return self._alg_output_dir / self._alg_artifact_name
 
     def _output_to_labels(self, output_path: Path) -> np.ndarray:
         planes = []
