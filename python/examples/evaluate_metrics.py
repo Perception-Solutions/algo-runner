@@ -25,7 +25,7 @@ def main(argv):
     evaluate_metrics(
         predictions,
         Path("data/metrics_example_ground_truth.png"),
-        metric_names=("precision-iou", "mean-dice"),
+        metric_names=("precision-iou", "mean-dice", "multivalue-0.8"),
         print_to_console=(args.print_to_console != "false"),
         output_file=args.output_file,
     )

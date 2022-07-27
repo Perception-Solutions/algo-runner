@@ -1,3 +1,3 @@
-from . import DDPFF, CAPE
+from . import DDPFF, PEAC
 from .DDPFF import *
-from .CAPE import *
+from .PEAC import *

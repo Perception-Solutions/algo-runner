@@ -1,6 +1,6 @@
 import numpy as np
 
-from algorithm import CAPE, DDPFF
+from algorithm import DDPFF, PEAC
 from metrics import evaluate_metrics
 from pathlib import Path
 
@@ -33,13 +33,8 @@ def main(argv):
 
     args = parser.parse_args(argv)
 
-    if args.algorithm.startswith("cape"):
-        algorithm = CAPE(
-            args.algorithm,
-            args.config,
-            args.data,
-            args.data.parent / "calib_params.xml",
-        )
+    if args.algorithm.startswith("peac"):
+        algorithm = PEAC(args.algorithm, args.config, args.data)
     elif args.algorithm.startswith("ddpff"):
         algorithm = DDPFF(args.algorithm, args.config, args.data)
     else:
