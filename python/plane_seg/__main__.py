@@ -1,6 +1,6 @@
 import numpy as np
 
-from algorithm import DDPFF, PEAC
+from algorithm import DDPFF, PEAC, CAPE
 from metrics import evaluate_metrics
 from pathlib import Path
 
@@ -37,6 +37,13 @@ def main(argv):
         algorithm = PEAC(args.algorithm, args.config, args.data)
     elif args.algorithm.startswith("ddpff"):
         algorithm = DDPFF(args.algorithm, args.config, args.data)
+    elif args.algorithm.startswith("cape"):
+        algorithm = CAPE(
+            args.algorithm,
+            args.config,
+            args.data,
+            args.data.parent / "calib_params.xml",
+        )
     else:
         raise ValueError("invalid algorithm specified:", args.algorithm)
 
