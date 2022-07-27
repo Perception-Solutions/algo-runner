@@ -12,7 +12,7 @@ __all__ = ["Algorithm"]
 
 class Algorithm(abc.ABC):
     @abc.abstractmethod
-    def __init__(self, alg_path: Path, cfg_path: Path, pcd_path: Path):
+    def __init__(self, alg_path: Path, cfg_path: Path, pcd_path: Path, **kwargs):
         self.alg_path = alg_path
         self.cfg_path = cfg_path
         self.pcd_path = pcd_path

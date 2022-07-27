@@ -3,7 +3,6 @@ import numpy as np
 from algorithm import DDPFF, PEAC
 from metrics import evaluate_metrics
 from pathlib import Path
-from typing import AnyStr
 
 import argparse
 import sys
@@ -11,21 +10,21 @@ import sys
 
 def main(argv):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--algorithm", type=Path)
+    parser.add_argument("--algorithm", type=str)
     parser.add_argument("--config", type=Path)
     parser.add_argument("--data", type=Path)
     parser.add_argument("--output", type=Path, default="labels")
     parser.add_argument(
         "--eval-metric",
-        type=AnyStr,
+        type=str,
         help="may be: {iou, dice, precision-iou, recall-iou, fScore-iou, mean-iou, mean-dice}",
     )
     parser.add_argument(
-        "--eval-all-metrics", type=AnyStr, default="false", help="may be: true, false"
+        "--eval-all-metrics", type=str, default="false", help="may be: true, false"
     )
     parser.add_argument(
         "--metrics-print-to-console",
-        type=AnyStr,
+        type=str,
         default="true",
         help="may be: true, false",
     )
@@ -57,8 +56,8 @@ def main(argv):
         evaluated_metrics = evaluate_metrics(
             labels,
             args.ground_truth,
-            args.metrics_print_to_console,
-            args.metrics_output_to_file,
+            print_to_console=(args.metrics_print_to_console != "false"),
+            output_file=args.metrics_output_to_file,
         )
 
 
