@@ -20,13 +20,13 @@ def main(argv):
         help="may be: {iou, dice, precision-iou, recall-iou, fScore-iou, mean-iou, mean-dice}",
     )
     parser.add_argument(
-        "--eval-all-metrics", type=str, default="false", help="may be: true, false"
+        "--eval-all-metrics", type=bool, default=False, help="True/False"
     )
     parser.add_argument(
         "--metrics-print-to-console",
-        type=str,
-        default="true",
-        help="may be: true, false",
+        type=bool,
+        default=True,
+        help="True/False",
     )
     parser.add_argument("--metrics-output-to-file", type=Path)
     parser.add_argument("--ground-truth", type=Path)
@@ -42,7 +42,7 @@ def main(argv):
             args.algorithm,
             args.config,
             args.data,
-            args.data.parent / "calib_params.xml",
+            calib_path=args.config,
         )
     else:
         raise ValueError("invalid algorithm specified:", args.algorithm)
@@ -59,11 +59,11 @@ def main(argv):
             args.metrics_print_to_console,
             args.metrics_output_to_file,
         )
-    elif args.eval_all_metrics != "false":
+    elif args.eval_all_metrics:
         evaluated_metrics = evaluate_metrics(
             labels,
             args.ground_truth,
-            print_to_console=(args.metrics_print_to_console != "false"),
+            print_to_console=args.metrics_print_to_console,
             output_file=args.metrics_output_to_file,
         )
 
