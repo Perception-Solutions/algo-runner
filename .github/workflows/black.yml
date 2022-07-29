@@ -1,0 +1,16 @@
+name: Lint
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v2
+
+      - name: Code style check
+        uses: psf/black@stable
+        with:
+          options: "--check"
+          src: "./python"

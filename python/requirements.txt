@@ -1,0 +1,4 @@
+open3d==0.15.2
+docker
+evops==0.1.3
+git+https://github.com/klintan/pypcd.git
