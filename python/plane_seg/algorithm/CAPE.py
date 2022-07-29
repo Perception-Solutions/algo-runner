@@ -1,7 +1,7 @@
 from pathlib import Path
 from shutil import rmtree, copy2
 
-from typing import Collection
+from typing import Collection, Tuple
 
 from . import Algorithm
 
@@ -48,31 +48,33 @@ class CAPE(Algorithm.Algorithm):
 
     # getting parameters for running algo
     def _preprocess_input(self) -> Collection[str]:
-        container_input_dir_name = str(self.__convert_point_cloud_to_depth_image())
+        img_path = self._alg_input_dir / self._alg_input_depth_name
+        if self.input_is_depth:
+            copy2(self.pcd_path, img_path)
+        else:
+            depth_image = self.__convert_point_cloud_to_depth_image(shape=(480, 640))
+            o3d.io.write_image(str(img_path), depth_image)
         container_cfg_name = str(
             self._cfg.write(self._alg_input_dir / self._alg_input_config_name)
         )
 
-        copy2(str(self.calib_path), str(container_input_dir_name))
+        copy2(self.calib_path, self._alg_input_dir)
 
-        return [container_input_dir_name, container_cfg_name]
+        return [self._alg_input_dir, container_cfg_name]
 
-    def __convert_point_cloud_to_depth_image(self) -> Path:
-        img_path = str(self._alg_input_dir / self._alg_input_depth_name)
-        if self.input_is_depth:
-            copy2(str(self.pcd_path), img_path)
-        else:
-            pcd = o3d.io.read_point_cloud(str(self.pcd_path))
-            pcd.paint_uniform_color([0, 0, 0])
+    def __convert_point_cloud_to_depth_image(
+        self, shape: Tuple[int, int]
+    ) -> o3d.geometry.Image:
+        pcd = o3d.io.read_point_cloud(str(self.pcd_path))
+        pcd.paint_uniform_color([0, 0, 0])
 
-            xyz_load = np.asarray(pcd.points)
-            z = xyz_load[:, 2].reshape(480, 640)  # TODO: get rid of magic numbers
-            d = (z * 1000).astype(np.uint32)
-            img = o3d.geometry.Image(d.astype(np.uint16))
+        xyz_load = np.asarray(pcd.points)
+        z = xyz_load[:, 2].reshape(shape[0], shape[1])
+        scale_factor = 1000
+        depth = (z * scale_factor).astype(np.uint32)
+        d_img = o3d.geometry.Image(depth.astype(np.uint16))
 
-            o3d.io.write_image(img_path, img)
-
-        return self._alg_input_dir
+        return d_img
 
     def _output_to_labels(self, output_path: Path) -> np.ndarray:
         labels_table = np.genfromtxt(output_path, delimiter=",").astype(np.uint8)
