@@ -67,6 +67,8 @@ class DDPFF(Algorithm.Algorithm):
         labels = np.zeros(number_of_points, dtype=int)
         s = set()
         for index, plane_indices in enumerate(planes):
+            if plane_indices.size == 0:
+                continue
             col = np.random.uniform(0, 1, size=(1, 3))
 
             while tuple(col[0]) in s:
@@ -74,19 +76,10 @@ class DDPFF(Algorithm.Algorithm):
 
             s.add(tuple(col[0]))
 
-            if plane_indices.size > 0:
-                labels[plane_indices] = index + 1
+            labels[plane_indices] = index + 1
 
         return labels
 
     def _clear_artifacts(self):
         rmtree(self._alg_input_dir)
         rmtree(self._alg_output_dir)
-
-    @staticmethod
-    def __preprocess_pcd(pcd_path: Path, output_dir: Path) -> Path:
-        pcd = o3d.io.read_point_cloud(str(pcd_path))
-        pcd.paint_uniform_color([0, 0, 0])
-        pcd_path = str(output_dir / pcd_path.stem) + ".ply"
-        o3d.io.write_point_cloud(pcd_path, pcd, write_ascii=True)
-        return Path(pcd_path)
