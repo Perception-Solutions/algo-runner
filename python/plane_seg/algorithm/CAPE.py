@@ -23,6 +23,8 @@ class CAPE(Algorithm.Algorithm):
         self._cfg = None
         self._alg_input_dir = Path("input")
         self._alg_output_dir = Path("output")
+        self._alg_input_depth_name = Path("depth_0.png")
+        self._alg_input_config_name = Path("params.ini")
         self._alg_artifact_name = Path("labels_0.csv")
         self.input_is_depth = pcd_path.suffix == ".png"
         self._parameter_list = (
@@ -47,14 +49,16 @@ class CAPE(Algorithm.Algorithm):
     # getting parameters for running algo
     def _preprocess_input(self) -> Collection[str]:
         container_input_dir_name = str(self.__convert_point_cloud_to_depth_image())
-        container_cfg_name = str(self._cfg.write(self._alg_input_dir / "params.ini"))
+        container_cfg_name = str(
+            self._cfg.write(self._alg_input_dir / self._alg_input_config_name)
+        )
 
         copy2(str(self.calib_path), str(container_input_dir_name))
 
         return [container_input_dir_name, container_cfg_name]
 
     def __convert_point_cloud_to_depth_image(self) -> Path:
-        img_path = str(self._alg_input_dir / "depth_0.png")
+        img_path = str(self._alg_input_dir / self._alg_input_depth_name)
         if self.input_is_depth:
             copy2(str(self.pcd_path), img_path)
         else:
