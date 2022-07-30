@@ -1,4 +1,5 @@
-# plane-seg
+# algo-runner
+![workflow](https://github.com/achains/algo-runner/actions/workflows/black.yml/badge.svg)
 ## Abstract 
 There are many algoritmhs which are used for plane segmentation, especially based on RANSAC technique. Despite the high accuracy given by RANSAC, the method has its own limitations.
 
