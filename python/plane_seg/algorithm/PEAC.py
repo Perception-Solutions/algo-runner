@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from shutil import rmtree
 from pypcd import pypcd
@@ -19,7 +20,7 @@ class PEAC(Algorithm.Algorithm):
         container_name: str,
         cfg_path: Path,
         pcd_path: Path,
-        size: tuple = (640, 480),
+        size: tuple = (480, 640),
     ):
         self.container_name = container_name
         self.cfg_path = cfg_path
@@ -29,12 +30,12 @@ class PEAC(Algorithm.Algorithm):
         self._cfg = None
         self._alg_input_dir = Path("input")
         self._alg_output_dir = Path("output")
-        self._alg_artifact_name = Path(self.pcd_name + "/" + self.pcd_name + ".npy")
+        self._alg_artifact_name = Path(self.pcd_name + "/" + self.pcd_name + ".pcd")
         self._parameter_list = (
-            "loop",
-            "debug",
+            # "loop",
+            # "debug",
             "unitScaleFactor",
-            "showWindow",
+            # "showWindow",
             "stdTol_merge",
             "stdTol_init",
             "depthSigma",
@@ -55,9 +56,15 @@ class PEAC(Algorithm.Algorithm):
 
     def _preprocess_input(self) -> Collection[str]:
         pcd_name = self.__preprocess_point_cloud().name
-        cfg_name = self._cfg.write(self._alg_input_dir / self.cfg_path.name).name
+        cfg_name = (
+            "input/" + self._cfg.write(self._alg_input_dir / self.cfg_path.name).name
+        )
 
         return [pcd_name, cfg_name]
+
+    def _evaluate_algorithm(self, input_parameters: Collection[str]) -> Path:
+        os.mkdir(self._alg_output_dir / self.pcd_name)
+        return super()._evaluate_algorithm(input_parameters)
 
     def __preprocess_point_cloud(self) -> Path:
         pcd_path = self._alg_input_dir / (self.pcd_path.stem + ".pcd")
@@ -79,12 +86,25 @@ class PEAC(Algorithm.Algorithm):
         pcd = pypcd.make_xyz_point_cloud(data, meta)
         pcd.save_pcd(pcd_path)
 
-        return Path(self.pcd_path)
+        return Path(pcd_path)
 
     def _output_to_labels(self, output_path: Path) -> np.ndarray:
-        labels = np.load(str(output_path))
+        pcd = pypcd.PointCloud.from_path(output_path)
+        raw_colors = pcd.pc_data["rgb"]
+        blue = raw_colors % 256
+        green = raw_colors // 256 % 256
+        red = raw_colors // 256 // 256 % 256
+        raw_colors = np.vstack((red, green, blue)).T
 
-        return labels
+        colors = np.zeros(raw_colors.shape[0])
+
+        for n, color in enumerate(np.unique(raw_colors, axis=0)):
+            if not color.any():
+                continue
+
+            colors[np.where((raw_colors == color).all(axis=1))] = n + 1
+
+        return colors
 
     def _clear_artifacts(self):
         rmtree(self._alg_input_dir)
