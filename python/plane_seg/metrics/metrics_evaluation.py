@@ -56,7 +56,10 @@ def evaluate_metrics(
         elif metric_name == "recall-iou":
             metric_values[metric_name] = recall(prediction, ground_truth, "iou")
         elif metric_name == "fScore-iou":
-            metric_values[metric_name] = fScore(prediction, ground_truth, "iou")
+            try:
+                metric_values[metric_name] = fScore(prediction, ground_truth, "iou")
+            except ZeroDivisionError:
+                metric_values[metric_name] = 0
         elif metric_name == "mean-iou":
             metric_values[metric_name] = mean(prediction, ground_truth, iou)
         elif metric_name == "mean-dice":

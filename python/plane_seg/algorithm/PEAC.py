@@ -32,10 +32,10 @@ class PEAC(Algorithm.Algorithm):
         self._alg_output_dir = Path("output")
         self._alg_artifact_name = Path(self.pcd_name + "/" + self.pcd_name + ".pcd")
         self._parameter_list = (
-            "loop",
-            "debug",
+            # "loop",
+            # "debug",
             "unitScaleFactor",
-            "showWindow",
+            # "showWindow",
             "stdTol_merge",
             "stdTol_init",
             "depthSigma",
